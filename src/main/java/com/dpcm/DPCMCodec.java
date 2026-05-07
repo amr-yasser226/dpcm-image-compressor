@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Scanner;
 
 /**
- * 2-D Feed Backward Predictive Coding (DPCM) — Main CLI entry point.
+ * 2-D Feed Backward Predictive Coding (DPCM) - Main CLI entry point.
  *
  * <p>Compile:
  * <pre>  javac -d out src/main/java/com/dpcm/*.java</pre>
@@ -19,7 +19,7 @@ import java.util.Scanner;
  */
 public class DPCMCodec {
 
-    // ─── Encoder ───────────────────────────────────────────────────────────
+    // --- Encoder -----------------------------------------------------------
 
     /**
      * Encodes a grayscale image using 2-D DPCM.
@@ -27,7 +27,7 @@ public class DPCMCodec {
      * <p>For each pixel in raster-scan order:
      * <ol>
      *   <li>Predict the pixel value from already-reconstructed neighbours.
-     *   <li>Compute the residual: error = original − predicted.
+     *   <li>Compute the residual: error = original - predicted.
      *   <li>Quantize the residual to a bin index.
      *   <li>Dequantize and add back to the predictor to get the reconstructed value.
      * </ol>
@@ -59,7 +59,7 @@ public class DPCMCodec {
         return quantized;
     }
 
-    // ─── Decoder ───────────────────────────────────────────────────────────
+    // --- Decoder -----------------------------------------------------------
 
     /**
      * Decodes a 2-D array of quantized residual indices back to a grayscale
@@ -86,7 +86,7 @@ public class DPCMCodec {
         return reconstructed;
     }
 
-    // ─── Single-image run ──────────────────────────────────────────────────
+    // --- Single-image run --------------------------------------------------
 
     static void runSingle(String imgPath, Predictor.Type type,
                           int levels, String outPath) {
@@ -124,7 +124,7 @@ public class DPCMCodec {
         }
     }
 
-    // ─── Batch analysis ────────────────────────────────────────────────────
+    // --- Batch analysis ----------------------------------------------------
 
     static void runBatch(String imgPath, String resultsDir) {
         int[]            levelSet = {8, 16, 32};
@@ -173,20 +173,20 @@ public class DPCMCodec {
         }
     }
 
-    // ─── Main menu ─────────────────────────────────────────────────────────
+    // --- Main menu ---------------------------------------------------------
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
         while (true) {
-            System.out.println("\n╔══════════════════════════════════════════╗");
-            System.out.println("║   2-D Feed Backward DPCM Codec           ║");
-            System.out.println("║   DSAI 325  —  Spring 2026               ║");
-            System.out.println("╠══════════════════════════════════════════╣");
-            System.out.println("║  1. Encode & Decode Image                ║");
-            System.out.println("║  2. Batch Analysis (all combos)          ║");
-            System.out.println("║  3. Exit                                 ║");
-            System.out.println("╚══════════════════════════════════════════╝");
+            System.out.println("\n+------------------------------------------+");
+            System.out.println("|   2-D Feed Backward DPCM Codec           |");
+            System.out.println("|   DSAI 325  -  Spring 2026               |");
+            System.out.println("+------------------------------------------+");
+            System.out.println("|  1. Encode & Decode Image                |");
+            System.out.println("|  2. Batch Analysis (all combos)          |");
+            System.out.println("|  3. Exit                                 |");
+            System.out.println("+------------------------------------------+");
             System.out.print("Choice: ");
             String ch = sc.nextLine().trim();
 

@@ -5,10 +5,10 @@ package com.dpcm;
  *
  * <p>Three metrics are computed:
  * <ul>
- *   <li><b>MSE</b> — Mean Squared Error between original and reconstructed pixels.
- *   <li><b>PSNR</b> — Peak Signal-to-Noise Ratio (dB), derived from MSE.
- *   <li><b>Compression Ratio</b> — original bits per pixel (8) divided by
- *       encoded bits per pixel (ceil(log₂ L)).
+ *   <li><b>MSE</b> - Mean Squared Error between original and reconstructed pixels.
+ *   <li><b>PSNR</b> - Peak Signal-to-Noise Ratio (dB), derived from MSE.
+ *   <li><b>Compression Ratio</b> - original bits per pixel (8) divided by
+ *       encoded bits per pixel (ceil(log2 L)).
  * </ul>
  */
 public class Metrics {
@@ -18,7 +18,7 @@ public class Metrics {
      * of identical dimensions.
      *
      * <pre>
-     *   MSE = (1 / N) × Σ (original[i][j] − reconstructed[i][j])²
+     *   MSE = (1 / N) * sum (original[i][j] - reconstructed[i][j])^2
      * </pre>
      *
      * @param original      original pixel array
@@ -42,7 +42,7 @@ public class Metrics {
      * Computes the Peak Signal-to-Noise Ratio (PSNR) in decibels.
      *
      * <pre>
-     *   PSNR = 10 × log₁₀(255² / MSE)
+     *   PSNR = 10 * log10(255^2 / MSE)
      * </pre>
      *
      * Returns {@link Double#POSITIVE_INFINITY} when MSE = 0 (lossless).
@@ -60,8 +60,8 @@ public class Metrics {
      *
      * <pre>
      *   Original : 8 bits/pixel
-     *   Encoded  : ceil(log₂ L) bits/pixel
-     *   CR       = 8 / ceil(log₂ L)
+     *   Encoded  : ceil(log2 L) bits/pixel
+     *   CR       = 8 / ceil(log2 L)
      * </pre>
      *
      * @param levels number of quantization levels L

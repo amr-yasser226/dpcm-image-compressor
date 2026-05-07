@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
  * <p>
  * Reads any image format supported by ImageIO, converts to grayscale using
  * the ITU-R BT.601 luminance formula, and exposes pixels as a 2-D int array
- * indexed [row][col] with values in [0, 255].
+ * indexing [row][col] with values in [0, 255].
  */
 public class ImageProcessor {
 
@@ -17,7 +17,7 @@ public class ImageProcessor {
      * Reads an image file and returns a 2-D grayscale pixel array [row][col].
      * Applies ITU-R BT.601: gray = 0.299R + 0.587G + 0.114B.
      *
-     * @param path absolute or relative path to an image file (PNG, JPEG, BMP …)
+     * @param path absolute or relative path to an image file (PNG, JPEG, BMP ...)
      * @return     2-D int array of grayscale values in [0, 255]
      * @throws IOException if the file cannot be read or decoded
      */

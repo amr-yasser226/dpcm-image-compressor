@@ -5,7 +5,7 @@ package com.dpcm;
  *
  * <p>All predictors operate on the <em>reconstructed</em> pixel buffer, not
  * on the original image.  This guarantees that the decoder can reproduce the
- * identical prediction sequence using only the quantized residuals — no side
+ * identical prediction sequence using only the quantized residuals - no side
  * channel to the original is required.
  *
  * <p>Neighbour notation (standard DPCM convention):
@@ -19,15 +19,15 @@ package com.dpcm;
  */
 public class Predictor {
 
-    // ─── Predictor type enum ────────────────────────────────────────────────
+    // --- Predictor type enum ------------------------------------------------
 
     public enum Type {
 
-        /** Order-1: horizontal predictor — P(i,j) = a */
+        /** Order-1: horizontal predictor - P(i,j) = a */
         ORDER_1("Order-1"),
 
         /**
-         * Order-2: plane predictor — P(i,j) = a + b − c
+         * Order-2: plane predictor - P(i,j) = a + b - c
          * <p>Equivalent to fitting a plane through the three known neighbours.
          */
         ORDER_2("Order-2"),
@@ -35,9 +35,9 @@ public class Predictor {
         /**
          * Adaptive LOCO-A predictor (JPEG-LS, ISO 14495-1).
          * <pre>
-         *   if   c &ge; max(a, b) → P = min(a, b)
-         *   elif c &le; min(a, b) → P = max(a, b)
-         *   else                  → P = a + b − c
+         *   if   c >= max(a, b) -> P = min(a, b)
+         *   elif c <= min(a, b) -> P = max(a, b)
+         *   else                  -> P = a + b - c
          * </pre>
          */
         ADAPTIVE("Adaptive");
@@ -62,12 +62,12 @@ public class Predictor {
         }
     }
 
-    // ─── Core prediction method ─────────────────────────────────────────────
+    // --- Core prediction method ---------------------------------------------
 
     /**
      * Computes the predicted pixel value at position (i, j).
      *
-     * @param rec  reconstructed pixel buffer — only positions already visited
+     * @param rec  reconstructed pixel buffer - only positions already visited
      *             (row-major scan order before (i, j)) contain valid values
      * @param i    current row
      * @param j    current column
@@ -77,11 +77,11 @@ public class Predictor {
     public static int predict(int[][] rec, int i, int j, Type type) {
         switch (type) {
 
-            // ── Order-1: use left neighbour ──────────────────────────────────
+            // --- Order-1: use left neighbour ----------------------------------
             case ORDER_1:
                 return (j > 0) ? rec[i][j - 1] : 128;
 
-            // ── Order-2: plane predictor ─────────────────────────────────────
+            // --- Order-2: plane predictor ------------------------------------
             case ORDER_2:
                 if (i == 0 && j == 0) return 128;
                 if (i == 0)           return rec[i][j - 1];
@@ -89,7 +89,7 @@ public class Predictor {
                 return ImageProcessor.clamp(
                     rec[i][j - 1] + rec[i - 1][j] - rec[i - 1][j - 1]);
 
-            // ── Adaptive LOCO-A (JPEG-LS) ────────────────────────────────────
+            // --- Adaptive LOCO-A (JPEG-LS) ------------------------------------
             case ADAPTIVE: {
                 if (i == 0 && j == 0) return 128;
                 if (i == 0)           return rec[i][j - 1];

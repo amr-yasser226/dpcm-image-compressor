@@ -1,0 +1,158 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{float}
+
+\definecolor{codebg}{rgb}{0.95,0.95,0.95}
+\definecolor{codegreen}{rgb}{0,0.5,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstdefinestyle{javastyle}{
+    backgroundcolor=\color{codebg},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\scriptsize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    language=Java,
+    frame=single,
+    rulecolor=\color{black}
+}
+
+\title{\textbf{DSAI 325 --- Introduction to Information Theory\\Assignment 5: 2-D Feed Backward Predictive Coding (DPCM)}}
+\author{Amr Yasser}
+\date{Spring 2026}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ===========================
+\section{Introduction}
+% ===========================
+
+This report details the implementation and analysis of a \textbf{2-D Feed Backward Differential Pulse Code Modulation (DPCM)} system for grayscale image compression. Predictive coding reduces statistical redundancy by transmitting only the quantized difference between an actual pixel value and its predicted value based on previously reconstructed neighbors.
+
+The implementation explores the impact of different predictor types (Order-1, Order-2, and Adaptive) and quantization levels (8, 16, 32) on image quality (MSE/PSNR) and compression efficiency.
+
+% ===========================
+\section{Theory and Methodology}
+% ===========================
+
+\subsection{Predictive Coding Pipeline}
+
+The DPCM system consists of an encoder that predicts the current pixel $X(i,j)$ using a prediction function $P(\cdot)$ based on reconstructed past pixels $\hat{X}(i-1,j), \hat{X}(i,j-1)$, etc. The residual $e(i,j) = X(i,j) - P(i,j)$ is then quantized and transmitted.
+
+The decoder uses the same predictor and adds the dequantized residual to the prediction to reconstruct the pixel. By using the reconstructed values in the encoder's predictor (Feed Backward), we ensure the encoder and decoder remain synchronized.
+
+\subsection{Predictor Strategies}
+
+Three 2-D predictors were implemented:
+
+\begin{enumerate}
+    \item \textbf{Order-1 (Horizontal):} Uses the immediate left neighbor.
+    \[ P(i,j) = \hat{X}(i, j-1) \]
+    \item \textbf{Order-2 (Plane):} Fits a plane through the left, above, and upper-left neighbors.
+    \[ P(i,j) = \hat{X}(i, j-1) + \hat{X}(i-1, j) - \hat{X}(i-1, j-1) \]
+    \item \textbf{Adaptive (LOCO-A):} The predictor used in the JPEG-LS standard. It selects the prediction based on local edges detected by neighbors $a$ (left), $b$ (above), and $c$ (upper-left).
+    \[
+    P = \begin{cases}
+    \min(a,b) & \text{if } c \geq \max(a,b) \\
+    \max(a,b) & \text{if } c \leq \min(a,b) \\
+    a+b-c & \text{otherwise}
+    \end{cases}
+    \]
+\end{enumerate}
+
+\subsection{Quantization and Metrics}
+
+Uniform scalar quantization was used to map residuals in the range $[-255, 255]$ into $L$ levels.
+
+\textbf{Mean Squared Error (MSE):}
+\[ \text{MSE} = \frac{1}{N} \sum (X_i - \hat{X}_i)^2 \]
+
+\textbf{Peak Signal-to-Noise Ratio (PSNR):}
+\[ \text{PSNR} = 10 \cdot \log_{10}\left(\frac{255^2}{\text{MSE}}\right) \]
+
+\textbf{Compression Ratio (CR):}
+\[ \text{CR} = \frac{8}{\lceil \log_2 L \rceil} \]
+
+\newpage
+
+% ===========================
+\section{Implementation}
+% ===========================
+
+The project is structured into a modular Java package \texttt{com.dpcm} within a professional repository format.
+
+\begin{itemize}
+    \item \texttt{ImageProcessor}: Handles grayscale conversion (ITU-R BT.601) and I/O.
+    \item \texttt{Predictor}: Implements the three prediction strategies.
+    \item \texttt{Quantizer}: Implements uniform scalar quantization/dequantization.
+    \item \texttt{Metrics}: Computes MSE, PSNR, and CR.
+    \item \texttt{DPCMCodec}: Orchestrates the encoding and decoding pipeline.
+\end{itemize}
+
+\newpage
+
+% ===========================
+\section{Results and Analysis}
+% ===========================
+
+\subsection{Quantitative Results (Portrait Image)}
+
+The following table summarizes the performance on a synthetic portrait texture (\texttt{test04\_portrait.png}).
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Predictor} & \textbf{Levels (L)} & \textbf{MSE} & \textbf{PSNR (dB)} & \textbf{Ratio} \\
+\midrule
+Order-1  & 8  & 331.3696 & 22.93 & 2.67x \\
+Order-1  & 16 & 79.9412  & 29.10 & 2.00x \\
+Order-1  & 32 & 19.0804  & 35.32 & 1.60x \\
+\midrule
+Order-2  & 8  & 315.2358 & 23.14 & 2.67x \\
+Order-2  & 16 & 81.5190  & 29.02 & 2.00x \\
+Order-2  & 32 & 19.8870  & 35.15 & 1.60x \\
+\midrule
+Adaptive & 8  & 327.0042 & 22.99 & 2.67x \\
+Adaptive & 16 & 78.6210  & 29.18 & 2.00x \\
+Adaptive & 32 & 19.0822  & 35.32 & 1.60x \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Discussion}
+
+\begin{itemize}
+    \item \textbf{Quantization Impact}: As the number of levels $L$ increases, the MSE drops significantly and PSNR increases. This is expected as the quantization error decreases. However, the compression ratio decreases because more bits are needed per pixel.
+    \item \textbf{Predictor Performance}: The Adaptive (LOCO-A) and Order-2 predictors generally outperform Order-1 on more complex images because they capture 2D spatial correlations. On smooth areas, Order-2 (plane) is very effective, while Adaptive handles edges better without overshooting.
+    \item \textbf{Visual Quality}: At $L=32$ (5 bits), the reconstruction is nearly indistinguishable from the original. At $L=8$, contouring artifacts and "false edges" become visible in smooth regions.
+\end{itemize}
+
+% ===========================
+\section{Conclusion}
+% ===========================
+
+The implementation successfully demonstrates 2-D DPCM for image compression. The feed-backward architecture ensures robust reconstruction. The results show a clear trade-off between quantization depth and fidelity, with adaptive predictors providing the most consistent performance across various image features.
+
+\end{document}

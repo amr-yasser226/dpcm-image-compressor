@@ -1,0 +1,47 @@
+# Compiled class files
+*.class
+
+# Package files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*~
+*.iml
+.project
+.classpath
+.settings/
+nbproject/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# LaTeX auxiliary files (all EXCEPT .tex and .pdf)
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Build output
+out/
+bin/
+build/
+target/
+
+# Python
+__pycache__/
+*.pyc
+venv/
